@@ -1,0 +1,46 @@
+# Docker network:
+# To get these services on the same Docker network as a local
+# containerized <app> instance, remember to also use
+# `docker-compose -p <project-name> up -d`. Use the same project
+# name and Docker network when running <app>'s docker compose.
+
+version: "3.8"
+
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.6
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - cluster.name=single-node-cluster
+    ports:
+      - 9200:9200
+      - 9300:9300
+    volumes:
+      - es-data:/usr/share/elasticsearch/data
+    networks:
+      - kibana-elasticsearch-net
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.17.6
+    container_name: kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - 5601:5601
+    depends_on:
+      - elasticsearch
+    volumes:
+      - kibana-data:/use/share/kibana/data
+    networks:
+      - kibana-elasticsearch-net
+
+networks:
+  kibana-elasticsearch-net:
+    driver: bridge
+
+volumes:
+  kibana-data:
+    driver: local
+  es-data:
+    driver: local

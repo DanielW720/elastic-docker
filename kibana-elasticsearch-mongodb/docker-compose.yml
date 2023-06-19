@@ -1,0 +1,90 @@
+# Docker network:
+# To get these services on the same Docker network as a local
+# containerized <app> instance, remember to also use
+# `docker-compose -p <project-name> up -d`. Use the same project
+# name and Docker network when running <app>'s docker compose.
+
+# MongoDB authentication:
+# If it's the first time running this mongodb container, begin by
+# setting the command "--noauth" and start the container. Then
+# use `docker exec -it mongodb mongo` in a terminal and add the
+# users (see below). Quit the container and change back to "--auth".
+# Start the container again. Done.
+
+# Add users to MongoDB:
+
+# db.createUser(
+#   {
+#     user: "admin",
+#     pwd: "mongoadmin",
+#     roles: [ { role: "userAdminAnyDatabase", db: "admin" } ]
+#   }
+# )
+# db.createUser(
+#   {
+#     user: "root",
+#     pwd: "mongoroot",
+#     roles: [ { role: "root", db: "admin" } ]
+#   }
+# )
+# db.createUser(
+#   {
+#     user: "user",
+#     pwd: "password",
+#     roles: [ { role: "readWrite", db: "user" } ]
+#   }
+# )
+
+version: "3.8"
+
+services:
+  mongodb:
+    image: mongo:4.4.14
+    container_name: mongodb
+    ports:
+      - 27017:27017
+    networks:
+      - kibana-elasticsearch-net
+    volumes:
+      - mongodata:/data/db
+    command: ["mongod", "--noauth"]
+
+  es:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.6
+    container_name: es
+    environment:
+      - discovery.type=single-node
+      - cluster.name=single-node-cluster
+    ports:
+      - 9200:9200
+      - 9300:9300
+    volumes:
+      - es-data:/usr/share/elasticsearch/data
+    networks:
+      - kibana-elasticsearch-net
+
+  kib:
+    image: docker.elastic.co/kibana/kibana:7.17.6
+    container_name: kib
+    environment:
+      - ELASTICSEARCH_HOSTS=http://es:9200
+    ports:
+      - 5601:5601
+    depends_on:
+      - es
+    volumes:
+      - kibana-data:/use/share/kibana/data
+    networks:
+      - kibana-elasticsearch-net
+
+networks:
+  kibana-elasticsearch-net:
+    driver: bridge
+
+volumes:
+  mongodata:
+    driver: local
+  kibana-data:
+    driver: local
+  es-data:
+    driver: local

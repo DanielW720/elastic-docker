@@ -1,0 +1,93 @@
+version: "3"
+
+services:
+  # Cluster #1
+  elasticsearch-cluster1:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.6
+    container_name: elasticsearch-cluster1
+    environment:
+      - node.name=es-node-1
+      - cluster.name=es-cluster-1
+      - network.host=0.0.0.0
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - xpack.security.enabled=true
+      - ELASTIC_USERNAME=elastic
+      - ELASTIC_PASSWORD=password
+      # Whitelist the remote cluster to enable reindex across the two clusters
+      - reindex.remote.whitelist=elasticsearch-cluster2:9200
+    volumes:
+      - es-cluster1:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    networks:
+      - es-net
+
+  kibana-cluster1:
+    image: docker.elastic.co/kibana/kibana:7.17.6
+    container_name: kibana-cluster1
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch-cluster1:9200
+      - xpack.security.enabled=true
+      - ELASTICSEARCH_USERNAME=elastic
+      - ELASTICSEARCH_PASSWORD=password
+    volumes:
+      - kibana-cluster1:/use/share/kibana/data
+    ports:
+      - 5601:5601
+    depends_on:
+      - elasticsearch-cluster1
+    networks:
+      - es-net
+
+  # Cluster #2
+  elasticsearch-cluster2:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.6
+    container_name: elasticsearch-cluster2
+    environment:
+      - node.name=es-node-2
+      - cluster.name=es-cluster-2
+      - network.host=0.0.0.0
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      # - "discovery.seed_hosts=elasticsearch-cluster1"
+      # - "cluster.initial_master_nodes=es-node-1" not allowed one single node cluster
+      - xpack.security.enabled=true
+      - ELASTIC_USERNAME=elastic
+      - ELASTIC_PASSWORD=password
+    volumes:
+      - es-cluster2:/usr/share/elasticsearch/data
+    ports:
+      - 9201:9200
+    networks:
+      - es-net
+
+  kibana-cluster2:
+    image: docker.elastic.co/kibana/kibana:7.17.6
+    container_name: kibana-cluster2
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch-cluster2:9200
+      - xpack.security.enabled=true
+      - ELASTICSEARCH_USERNAME=elastic
+      - ELASTICSEARCH_PASSWORD=password
+    volumes:
+      - kibana-cluster2:/use/share/kibana/data
+    ports:
+      - 5602:5601
+    depends_on:
+      - elasticsearch-cluster2
+    networks:
+      - es-net
+
+networks:
+  es-net:
+
+volumes:
+  es-cluster1:
+    driver: local
+  kibana-cluster1:
+    driver: local
+  es-cluster2:
+    driver: local
+  kibana-cluster2:
+    driver: local

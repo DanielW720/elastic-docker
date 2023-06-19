@@ -1,0 +1,86 @@
+version: "3"
+
+services:
+  elasticsearch01:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.6
+    container_name: elasticsearch01
+    environment:
+      - node.name=elasticsearch01
+      - cluster.name=es-docker-cluster
+      - discovery.seed_hosts=elasticsearch02,elasticsearch03
+      - cluster.initial_master_nodes=elasticsearch01,elasticsearch02,elasticsearch03
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - elasticsearch01:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    networks:
+      - three-node-cluster
+  elasticsearch02:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.6
+    container_name: elasticsearch02
+    environment:
+      - node.name=elasticsearch02
+      - cluster.name=es-docker-cluster
+      - discovery.seed_hosts=elasticsearch01,elasticsearch03
+      - cluster.initial_master_nodes=elasticsearch01,elasticsearch02,elasticsearch03
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - elasticsearch02:/usr/share/elasticsearch/data
+    networks:
+      - three-node-cluster
+  elasticsearch03:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.6
+    container_name: elasticsearch03
+    environment:
+      - node.name=elasticsearch03
+      - cluster.name=es-docker-cluster
+      - discovery.seed_hosts=elasticsearch01,elasticsearch02
+      - cluster.initial_master_nodes=elasticsearch01,elasticsearch02,elasticsearch03
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - elasticsearch03:/usr/share/elasticsearch/data
+    networks:
+      - three-node-cluster
+
+  kibana01:
+    image: docker.elastic.co/kibana/kibana:7.17.6
+    container_name: kibana01
+    ports:
+      - 5601:5601
+    environment:
+      server.host: 0.0.0.0
+      server.name: "kibana666"
+      server.publicBaseUrl: http://kibana666:5601
+      server.cors.enabled: true
+      ELASTICSEARCH_URL: http://elasticsearch01:9200
+      ELASTICSEARCH_HOSTS: '["http://elasticsearch01:9200","http://elasticsearch02:9200","http://elasticsearch03:9200"]'
+    networks:
+      - three-node-cluster
+
+volumes:
+  elasticsearch01:
+    driver: local
+  elasticsearch02:
+    driver: local
+  elasticsearch03:
+    driver: local
+
+networks:
+  three-node-cluster:
+    driver: bridge
