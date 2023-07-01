@@ -1,0 +1,8 @@
+node.name: elasticsearch03
+cluster.name: es-docker-cluster
+discovery.seed_hosts: ["elasticsearch02", "elasticsearch01"]
+cluster.initial_master_nodes:
+  ["elasticsearch01", "elasticsearch02", "elasticsearch03"]
+node.roles: ["master", "data", "data_cold", "data_frozen"]
+path.repo: ["/backup-repo"]
+network.host: 0.0.0.0
