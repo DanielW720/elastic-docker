@@ -1,0 +1,17 @@
+node.name: elasticsearch03
+cluster.name: es-docker-cluster
+discovery.seed_hosts: ["elasticsearch02", "elasticsearch01"]
+cluster.initial_master_nodes:
+  ["elasticsearch01", "elasticsearch02", "elasticsearch03"]
+node.roles: ["master", "data", "data_cold", "data_frozen"]
+path.repo: ["/backup-repo"]
+network.host: 0.0.0.0
+# Authentication
+xpack.security.enabled: true
+
+# TLS encryption
+xpack.security.transport.ssl.enabled: true
+xpack.security.transport.ssl.verification_mode: certificate
+xpack.security.transport.ssl.client_authentication: required
+xpack.security.transport.ssl.keystore.path: elastic-certificates.p12
+xpack.security.transport.ssl.truststore.path: elastic-certificates.p12
