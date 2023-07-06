@@ -75,7 +75,7 @@ Submitta sedan en sökning med ett sort-argument och speficicera PIT ID i pit.id
 
 GET /_search
 {
-  "size": 10000,
+  "size": 5,
   "query": {
     "match": {
       "products.product_name": "t-shirt"
