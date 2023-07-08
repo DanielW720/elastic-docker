@@ -70,6 +70,24 @@ services:
     networks:
       - three-node-cluster
 
+  # Additional single-node cluster for CCR and CCS
+  elasticsearch04:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.6
+    container_name: elasticsearch04
+    environment:
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./mount/elasticsearch04/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - ./mount/elasticsearch04/config/elastic-certificates.p12:/usr/share/elasticsearch/config/elastic-certificates.p12
+      - ./mount/elasticsearch04/data:/usr/share/elasticsearch/data
+    networks:
+      # putting second cluster on same network for simplicity
+      - three-node-cluster
+
 networks:
   three-node-cluster:
     driver: bridge
