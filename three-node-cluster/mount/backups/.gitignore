@@ -1,0 +1,3 @@
+# Separate .gitignore file to version control /backups dir
+*
+!.gitignore
