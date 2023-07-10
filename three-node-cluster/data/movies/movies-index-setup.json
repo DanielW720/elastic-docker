@@ -1,0 +1,150 @@
+{
+  "settings": {
+    "number_of_shards": "1",
+    "analysis": {
+      "filter": {
+        "edge_ngram_2_20": {
+          "type": "edge_ngram",
+          "min_gram": "2",
+          "max_gram": "20"
+        }
+      },
+      "analyzer": {
+        "autocomplete_2_20": {
+          "filter": ["lowercase", "edge_ngram_2_20"],
+          "tokenizer": "standard"
+        }
+      }
+    },
+    "number_of_replicas": "0"
+  },
+  "mappings": {
+    "properties": {
+      "Certificate": {
+        "type": "keyword"
+      },
+      "Director": {
+        "type": "text",
+        "fields": {
+          "autocomplete": {
+            "type": "text",
+            "analyzer": "autocomplete_2_20"
+          },
+          "raw": {
+            "type": "keyword"
+          }
+        }
+      },
+      "Genre": {
+        "type": "text",
+        "fields": {
+          "autocomplete": {
+            "type": "text",
+            "analyzer": "autocomplete_2_20"
+          },
+          "raw": {
+            "type": "keyword"
+          }
+        }
+      },
+      "Gross": {
+        "type": "keyword"
+      },
+      "IMDB_Rating": {
+        "type": "double"
+      },
+      "Meta_score": {
+        "type": "long"
+      },
+      "No_of_Votes": {
+        "type": "long"
+      },
+      "Overview": {
+        "type": "text"
+      },
+      "Poster_Link": {
+        "type": "keyword"
+      },
+      "Released_Year": {
+        "type": "keyword"
+      },
+      "Runtime": {
+        "type": "keyword"
+      },
+      "Series_Title": {
+        "type": "text",
+        "fields": {
+          "autocomplete": {
+            "type": "text",
+            "analyzer": "autocomplete_2_20"
+          },
+          "raw": {
+            "type": "keyword"
+          },
+          "suggest-edge-ngram": {
+            "type": "completion",
+            "analyzer": "autocomplete_2_20",
+            "preserve_separators": true,
+            "preserve_position_increments": true,
+            "max_input_length": 50
+          },
+          "suggest-standard": {
+            "type": "completion",
+            "analyzer": "simple",
+            "preserve_separators": true,
+            "preserve_position_increments": true,
+            "max_input_length": 50
+          }
+        }
+      },
+      "Star1": {
+        "type": "text",
+        "fields": {
+          "autocomplete": {
+            "type": "text",
+            "analyzer": "autocomplete_2_20"
+          },
+          "raw": {
+            "type": "keyword"
+          }
+        }
+      },
+      "Star2": {
+        "type": "text",
+        "fields": {
+          "autocomplete": {
+            "type": "text",
+            "analyzer": "autocomplete_2_20"
+          },
+          "raw": {
+            "type": "keyword"
+          }
+        }
+      },
+      "Star3": {
+        "type": "text",
+        "fields": {
+          "autocomplete": {
+            "type": "text",
+            "analyzer": "autocomplete_2_20"
+          },
+          "raw": {
+            "type": "keyword"
+          }
+        }
+      },
+      "Star4": {
+        "type": "text",
+        "fields": {
+          "autocomplete": {
+            "type": "text",
+            "analyzer": "autocomplete_2_20"
+          },
+          "raw": {
+            "type": "keyword"
+          }
+        }
+      }
+    }
+  }
+}
