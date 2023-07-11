@@ -3,7 +3,10 @@ cluster.name: es-docker-cluster
 discovery.seed_hosts: ["elasticsearch02", "elasticsearch03"]
 cluster.initial_master_nodes:
   ["elasticsearch01", "elasticsearch02", "elasticsearch03"]
-node.roles: ["master", "remote_cluster_client", "data", "data_hot", "ingest"]
+
+# Commenting out explicit node roles, hence elasticsearch01 have all roles
+# node.roles: ["master", "remote_cluster_client", "data", "data_hot", "ingest"]
+
 path.repo: ["/backup-repo"]
 network.host: 0.0.0.0
 # Authentication

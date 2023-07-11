@@ -4,7 +4,14 @@ discovery.seed_hosts: ["elasticsearch02", "elasticsearch01"]
 cluster.initial_master_nodes:
   ["elasticsearch01", "elasticsearch02", "elasticsearch03"]
 node.roles:
-  ["master", "remote_cluster_client", "data", "data_cold", "data_frozen"]
+  [
+    "master",
+    "remote_cluster_client",
+    "data_content",
+    "data",
+    "data_cold",
+    "data_frozen",
+  ]
 path.repo: ["/backup-repo"]
 network.host: 0.0.0.0
 # Authentication

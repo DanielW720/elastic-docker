@@ -65,6 +65,8 @@ GET ecommerce-readonly/_search
   }
 }
 
+Notera att fältet fields används för att returnera runtime-fältet. Runtime fields returneras aldrig i _source.
+
 Todo: 
 
 - [ ] Gör något annat i scriptet
