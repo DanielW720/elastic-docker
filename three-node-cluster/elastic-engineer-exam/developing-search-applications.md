@@ -63,9 +63,9 @@ GET ecommerce-readonly/_search
 
 ## Pagination
 
-Paginering kan implementeras med `from`, dvs antalet hits att skippa, och `size` för att sätta antalet hits per sida. Detta är ej rekommenderat: https://www.elastic.co/guide/en/elasticsearch/reference/8.1/paginate-search-results.html
+Paginering kan implementeras med `from`, dvs antalet hits att skippa, och `size` för att sätta antalet hits per sida. Referens: https://www.elastic.co/guide/en/elasticsearch/reference/8.1/paginate-search-results.html
 
-Använd istället `search_after`.
+ ### search_after
 
 Eftersom refreshes kan ske mellan de separata pagineringsbläddringarna så kan ordningen rubbas. Börja därför med att skapa en point-in-time för att bevara nuvarande index state mellan sökningarna:
 

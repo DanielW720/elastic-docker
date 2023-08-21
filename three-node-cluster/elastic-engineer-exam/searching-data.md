@@ -71,6 +71,80 @@ Todo:
 
 - [ ] Gör något annat i scriptet
 
+### Mer avancerat exempel:
+
+Aggregation query som plockar ut 2000-talets filmer med Meta_score bättre eller lika med 80, och listar de filmer med bäst rating per år. Inkluderar också medelrating för varje år. För att aggregationen endast ska returnera en enda titel behöver vi sätta size=1 i title-term. Men vi vill också att denna titel ska vara den med högst rating, därför behöver vi plocka ut ratingen för varje titel och sedan sortera på det värdet med bucket_sort (pipeline aggregation).
+
+GET imdb-movies/_search
+{
+  "size": 0,
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "range": {
+            "Released_Year": {
+              "gte": 2000
+            }
+          }
+        },
+        {
+          "range": {
+            "Meta_score": {
+              "gte": 80
+            }
+          }
+        }
+      ]
+    }
+  },
+  "aggs": {
+    "year-histogram": {
+      "histogram": {
+        "field": "Released_Year",
+        "interval": 1,
+        "order": {
+          "_key": "desc"
+        }
+      },
+      "aggs": {
+        "avg-imdb-rating": {
+          "avg": {
+            "field": "IMDB_Rating"
+          }
+        },
+        "title-terms": {
+          "terms": {
+            "field": "Series_Title.raw",
+            "size": 1,
+            "order": {
+              "rating.value": "desc"
+            }
+          },
+          "aggs": {
+            "rating": {
+              "max": {
+                "field": "IMDB_Rating"
+              }
+            },
+            "rating-sort": {
+              "bucket_sort": {
+                "sort": [
+                  {
+                    "rating": {
+                      "order": "desc"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
 ## Runtime fields
 
 Följande queries bygger ut mappningen av ecommerce-readwrite för att inkludera ett runtime field, och sedan använda fields API i _search för att hämta hem fältet vid search.

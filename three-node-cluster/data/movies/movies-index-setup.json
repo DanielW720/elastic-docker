@@ -16,7 +16,7 @@
         }
       }
     },
-    "number_of_replicas": "0"
+    "number_of_replicas": "2"
   },
   "mappings": {
     "properties": {
@@ -66,7 +66,7 @@
         "type": "keyword"
       },
       "Released_Year": {
-        "type": "keyword"
+        "type": "integer"
       },
       "Runtime": {
         "type": "keyword"
