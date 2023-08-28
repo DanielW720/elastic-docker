@@ -1,0 +1,93 @@
+version: "3"
+
+services:
+  elasticsearch01:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.6
+    container_name: elasticsearch01
+    environment:
+      - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./mount/backups:/backup-repo
+      - ./mount/elasticsearch01/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - ./mount/elasticsearch01/config/elastic-certificates.p12:/usr/share/elasticsearch/config/elastic-certificates.p12
+      - ./mount/elasticsearch01/data:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    networks:
+      - three-node-cluster
+
+  elasticsearch02:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.6
+    container_name: elasticsearch02
+    environment:
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./mount/backups:/backup-repo
+      - ./mount/elasticsearch02/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - ./mount/elasticsearch02/config/elastic-certificates.p12:/usr/share/elasticsearch/config/elastic-certificates.p12
+      - ./mount/elasticsearch02/data:/usr/share/elasticsearch/data
+    networks:
+      - three-node-cluster
+
+  elasticsearch03:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.6
+    container_name: elasticsearch03
+    environment:
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./mount/backups:/backup-repo
+      - ./mount/elasticsearch03/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - ./mount/elasticsearch03/config/elastic-certificates.p12:/usr/share/elasticsearch/config/elastic-certificates.p12
+      - ./mount/elasticsearch03/data:/usr/share/elasticsearch/data
+    networks:
+      - three-node-cluster
+
+  kibana01:
+    image: docker.elastic.co/kibana/kibana:7.17.6
+    container_name: kibana01
+    depends_on:
+      - elasticsearch01
+      - elasticsearch02
+      - elasticsearch03
+    ports:
+      - 5601:5601
+    volumes:
+      - ./mount/kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml
+      - ./mount/kibana/config/kibana.keystore:/usr/share/kibana/config/kibana.keystore
+      - ./mount/kibana/data:/usr/share/kibana/data
+    networks:
+      - three-node-cluster
+
+  # Additional single-node cluster for CCR and CCS
+  elasticsearch04:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.6
+    container_name: elasticsearch04
+    environment:
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./mount/elasticsearch04/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - ./mount/elasticsearch04/config/elastic-certificates.p12:/usr/share/elasticsearch/config/elastic-certificates.p12
+      - ./mount/elasticsearch04/data:/usr/share/elasticsearch/data
+    networks:
+      # putting second cluster on same network for simplicity
+      - three-node-cluster
+
+networks:
+  three-node-cluster:
+    driver: bridge

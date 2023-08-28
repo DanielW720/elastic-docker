@@ -1,0 +1,12 @@
+server.host: 0.0.0.0
+server.name: "kibana666"
+server.publicBaseUrl: http://kibana666:5601
+server.cors.enabled: true
+elasticsearch.hosts:
+  [
+    "http://elasticsearch01:9200",
+    "http://elasticsearch02:9200",
+    "http://elasticsearch03:9200",
+  ]
+# Authentication to the cluster
+elasticsearch.username: "kibana_system"
