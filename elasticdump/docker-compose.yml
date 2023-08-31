@@ -88,6 +88,15 @@ services:
       # putting second cluster on same network for simplicity
       - three-node-cluster
 
+  # A Linux container with Node.js installed on which Elasticdump can run
+  node_shell:
+    image: node
+    command: sh
+    stdin_open: true
+    container_name: node_shell
+    networks:
+      - three-node-cluster
+
 networks:
   three-node-cluster:
     driver: bridge
