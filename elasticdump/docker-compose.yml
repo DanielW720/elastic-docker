@@ -80,6 +80,8 @@ services:
       memlock:
         soft: -1
         hard: -1
+    ports:
+      - 9201:9200
     volumes:
       - ./mount/elasticsearch04/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
       - ./mount/elasticsearch04/config/elastic-certificates.p12:/usr/share/elasticsearch/config/elastic-certificates.p12
@@ -88,12 +90,17 @@ services:
       # putting second cluster on same network for simplicity
       - three-node-cluster
 
-  # A Linux container with Node.js installed on which Elasticdump can run
-  node_shell:
-    image: node
-    command: sh
-    stdin_open: true
-    container_name: node_shell
+  kibana02:
+    image: docker.elastic.co/kibana/kibana:7.17.6
+    container_name: kibana02
+    depends_on:
+      - elasticsearch04
+    ports:
+      - 5602:5601
+    volumes:
+      - ./mount/kibana02/config/kibana.yml:/usr/share/kibana/config/kibana.yml
+      - ./mount/kibana02/config/kibana.keystore:/usr/share/kibana/config/kibana.keystore
+      - ./mount/kibana02/data:/usr/share/kibana/data
     networks:
       - three-node-cluster
 
