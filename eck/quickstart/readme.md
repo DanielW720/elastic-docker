@@ -68,7 +68,7 @@ The operator automatically creates and manages Kubernetes resources to achieve t
 
 Create a dedicated namespace for your cluster:
 
-`kubectl create namepspace elastic-single-node`
+`kubectl create namespace elastic-single-node`
 
 Use the cluster:
 
