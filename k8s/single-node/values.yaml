@@ -1,0 +1,2 @@
+cluster:
+  name: single-node-minikube-es-cluster
